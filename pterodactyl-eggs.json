@@ -1,0 +1,128 @@
+{
+  "backend": {
+    "meta": {
+      "version": "PTDL_v2",
+      "update_url": null
+    },
+    "exported_at": "2024-01-01T00:00:00+00:00",
+    "name": "Sentinel Backend",
+    "author": "admin@sentinel.com",
+    "description": "FastAPI backend service for Sentinel Ubot",
+    "features": null,
+    "docker_images": {
+      "Python 3.11": "python:3.11-slim"
+    },
+    "file_denylist": [],
+    "startup": "bash ./start.sh",
+    "config": {
+      "files": "{}",
+      "startup": {
+        "done": "Application startup complete"
+      },
+      "logs": {
+        "custom": false,
+        "location": "logs/latest.log"
+      },
+      "stop": "^C"
+    },
+    "scripts": {
+      "installation": {
+        "script": "pip install --no-cache-dir -r requirements.txt && alembic upgrade head",
+        "container": "python:3.11-slim",
+        "entrypoint": "bash"
+      }
+    },
+    "variables": [
+      {
+        "name": "Database URL",
+        "description": "SQLite database URL",
+        "env_variable": "DATABASE_URL",
+        "default_value": "sqlite:///./sentinel.db",
+        "user_viewable": true,
+        "user_editable": true,
+        "rules": "required|string"
+      },
+      {
+        "name": "Secret Key",
+        "description": "Application secret key",
+        "env_variable": "SECRET_KEY",
+        "default_value": "",
+        "user_viewable": false,
+        "user_editable": false,
+        "rules": "required|string"
+      },
+      {
+        "name": "Telegram Bot Token",
+        "description": "Telegram bot token from @BotFather",
+        "env_variable": "TELEGRAM_BOT_TOKEN",
+        "default_value": "",
+        "user_viewable": false,
+        "user_editable": false,
+        "rules": "required|string"
+      }
+    ]
+  },
+  "frontend": {
+    "meta": {
+      "version": "PTDL_v2",
+      "update_url": null
+    },
+    "exported_at": "2024-01-01T00:00:00+00:00",
+    "name": "Sentinel Frontend",
+    "author": "admin@sentinel.com",
+    "description": "Next.js frontend service for Sentinel Ubot",
+    "features": null,
+    "docker_images": {
+      "Node.js 18": "node:18-alpine"
+    },
+    "file_denylist": [],
+    "startup": "bash ./start.sh",
+    "config": {
+      "files": "{}",
+      "startup": {
+        "done": "ready started server on"
+      },
+      "logs": {
+        "custom": false,
+        "location": "logs/latest.log"
+      },
+      "stop": "^C"
+    },
+    "scripts": {
+      "installation": {
+        "script": "yarn install && yarn build",
+        "container": "node:18-alpine",
+        "entrypoint": "bash"
+      }
+    },
+    "variables": [
+      {
+        "name": "API URL",
+        "description": "Backend API URL",
+        "env_variable": "NEXT_PUBLIC_API_URL",
+        "default_value": "https://careus-001-site1.mtempurl.com",
+        "user_viewable": true,
+        "user_editable": true,
+        "rules": "required|string"
+      },
+      {
+        "name": "Telegram Bot Username",
+        "description": "Telegram bot username",
+        "env_variable": "NEXT_PUBLIC_TELEGRAM_BOT_USERNAME",
+        "default_value": "Mr_Sakamotobot",
+        "user_viewable": true,
+        "user_editable": true,
+        "rules": "required|string"
+      },
+      {
+        "name": "Node Environment",
+        "description": "Node.js environment (production/development)",
+        "env_variable": "NODE_ENV",
+        "default_value": "production",
+        "user_viewable": true,
+        "user_editable": true,
+        "rules": "required|string|in:production,development"
+      }
+    ]
+  }
+}

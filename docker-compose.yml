@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./sentinel.db
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - BACKEND_CORS_ORIGINS=["https://careus-001-site1.mtempurl.com"]
+      - RATE_LIMIT_PER_SECOND=10
+      - SESSION_EXPIRE_DAYS=7
+    volumes:
+      - ./backend:/app
+      - sqlite_data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=https://careus-001-site1.mtempurl.com
+      - NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - NEXT_PUBLIC_APP_NAME=Sentinel Ubot
+      - NEXT_PUBLIC_APP_URL=https://careus-001-site1.mtempurl.com
+      - PORT=3000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:

@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+python-jose[cryptography]
+python-telegram-bot
+python-multipart
+pydantic
+pydantic-settings
+python-dotenv
+bcrypt
+passlib[bcrypt]
+aiosqlite
+httpx
+telethon==1.34.0
+aiofiles==23.2.1
+python-socks[asyncio]==2.4.3
