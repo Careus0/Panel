@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-    darkMode: ["class"],
+    darkMode: ["class", ":dark"],
     content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}", // Adjusted to be more inclusive and standard
   ],
@@ -99,5 +99,5 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [],
 } satisfies Config;

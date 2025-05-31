@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -137,36 +136,41 @@ export default function BotConfigPage() {
   const handleMessageVariantChange = (
     variantId: string,
     field: keyof MessageVariant,
-    value: string | ChangeEvent<HTMLInputElement> | File | null
+    value: string | React.ChangeEvent<HTMLInputElement> | File | null
   ) => {
-    setMessageVariants(prevVariants =>
+    setMessageVariants(prevVariants => 
       prevVariants.map(variant => {
-        if (variant.id === variantId) {
-          if (field === 'mediaFile' && value instanceof File) {
-            return {
-              ...variant,
-              mediaFile: value,
-              mediaUrl: value.name // Display filename in mediaUrl if file is chosen
-            };
+        if (variant.id !== variantId) return variant;
+
+        if (value === null) {
+          if (field === 'mediaFile') {
+            return { ...variant, mediaFile: null, mediaUrl: "" };
           }
-          if (field === 'mediaFile' && value === null) { // For clearing a file
-             return { ...variant, mediaFile: null, mediaUrl: "" };
-          }
-          if (typeof value === 'string') {
-            return { ...variant, [field]: value };
-          }
-          // Fallback for ChangeEvent on text/url inputs if still needed, though mediaFile handling is more specific
-          if (typeof value !== 'string' && 'target' in value) {
-             const targetValue = (value.target as HTMLInputElement).value;
-             return { ...variant, [field]: targetValue };
-          }
+          return variant;
         }
+
+        if (typeof value === 'string') {
+          return { ...variant, [field]: value };
+        }
+
+        // Penanganan untuk ChangeEvent
+        if (value && typeof value === 'object' && 'target' in value) {
+          const targetValue = (value as React.ChangeEvent<HTMLInputElement>).target.value;
+          return { ...variant, [field]: targetValue };
+        }
+
+        // Penanganan untuk File
+        if (value instanceof File) {
+          return { ...variant, [field]: value };
+        }
+
         return variant;
       })
     );
+
     if (field === 'mediaType') {
-        // Force re-render of Select if its value changes
-        setMessageVariantSelectKeys(prevKeys => ({ ...prevKeys, [variantId]: `mv-type-key-${Date.now()}` }));
+      // Force re-render of Select if its value changes
+      setMessageVariantSelectKeys(prevKeys => ({ ...prevKeys, [variantId]: `mv-type-key-${Date.now()}` }));
     }
   };
 
@@ -336,11 +340,10 @@ export default function BotConfigPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                     <Label htmlFor="messageSendingMode">Mode Pengiriman Pesan</Label>
+                    <div data-name="messageSendingMode" data-id="messageSendingMode">
                     <Select 
                         value={messageSendingMode} 
                         onValueChange={setMessageSendingMode}
-                        name="messageSendingMode" 
-                        id="messageSendingMode"
                     >
                         <SelectTrigger>
                         <SelectValue placeholder="Pilih mode pengiriman" />
@@ -351,13 +354,13 @@ export default function BotConfigPage() {
                         </SelectContent>
                     </Select>
                     </div>
+                    </div>
                     <div className="space-y-1.5">
                         <Label htmlFor="messageForwardingMode">Mode Penerusan Pesan</Label>
+                        <div data-name="messageForwardingMode" data-id="messageForwardingMode">
                         <Select 
                             value={messageForwardingMode} 
                             onValueChange={setMessageForwardingMode}
-                            name="messageForwardingMode" 
-                            id="messageForwardingMode"
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih mode penerusan" />
@@ -367,6 +370,7 @@ export default function BotConfigPage() {
                                 <SelectItem value="forwarded">Kirim sebagai Pesan Diteruskan</SelectItem>
                             </SelectContent>
                         </Select>
+                        </div>
                     </div>
                 </div>
 

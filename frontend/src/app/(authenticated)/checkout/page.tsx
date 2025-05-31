@@ -1,6 +1,6 @@
-
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { PricingPlan } from "@/types";
@@ -66,7 +66,7 @@ const allAvailablePlans: PricingPlan[] = [
   },
 ];
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -81,11 +81,11 @@ export default function CheckoutPage() {
       if (plan) {
         setSelectedPlan(plan);
       } else {
-        toast({ title: "Error", description: "Paket yang dipilih tidak ditemukan. Silakan coba lagi.", variant: "destructive" }); // Diubah
+        toast({ title: "Error", description: "Paket yang dipilih tidak ditemukan. Silakan coba lagi.", variant: "destructive" });
         router.push("/pricing");
       }
     } else {
-       toast({ title: "Error", description: "Tidak ada paket yang dipilih. Silakan pilih paket terlebih dahulu.", variant: "destructive" }); // Diubah
+       toast({ title: "Error", description: "Tidak ada paket yang dipilih. Silakan pilih paket terlebih dahulu.", variant: "destructive" });
        router.push("/pricing");
     }
     setIsLoading(false);
@@ -95,15 +95,15 @@ export default function CheckoutPage() {
     event.preventDefault();
     setIsProcessing(true);
     
-    const isTrial = selectedPlan?.price.startsWith("Rp 0"); // Diubah
+    const isTrial = selectedPlan?.price.startsWith("Rp 0");
 
-    console.log(`Menyimulasikan ${isTrial ? "aktivasi uji coba" : "pembayaran"} untuk paket:`, selectedPlan?.name); // Diubah
+    console.log(`Menyimulasikan ${isTrial ? "aktivasi uji coba" : "pembayaran"} untuk paket:`, selectedPlan?.name);
     await new Promise(resolve => setTimeout(resolve, isTrial ? 1000 : 2000)); 
 
     setIsProcessing(false);
     toast({
-      title: isTrial ? "Uji Coba Diaktifkan!" : "Pembayaran Berhasil!", // Diubah
-      description: `Anda telah ${isTrial ? "mengaktifkan" : "berlangganan"} ${selectedPlan?.name}. ${isTrial ? "Nikmati akses 24 jam Anda!" : "Selamat bergabung!"}`, // Diubah
+      title: isTrial ? "Uji Coba Diaktifkan!" : "Pembayaran Berhasil!",
+      description: `Anda telah ${isTrial ? "mengaktifkan" : "berlangganan"} ${selectedPlan?.name}. ${isTrial ? "Nikmati akses 24 jam Anda!" : "Selamat bergabung!"}`,
       variant: "default",
       duration: 5000,
     });
@@ -144,7 +144,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const isTrialPlan = selectedPlan.price.startsWith("Rp 0"); // Diubah
+  const isTrialPlan = selectedPlan.price.startsWith("Rp 0");
 
   return (
     <div className="container mx-auto max-w-3xl py-8 px-4">
@@ -258,5 +258,33 @@ export default function CheckoutPage() {
         </Button>
        </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto max-w-3xl py-8 px-4 space-y-6">
+        <Skeleton className="h-10 w-1/2" />
+        <Skeleton className="h-6 w-3/4" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          <Card className="shadow-lg">
+            <CardHeader><Skeleton className="h-8 w-3/4" /><Skeleton className="h-10 w-1/2 mt-2" /></CardHeader>
+            <CardContent><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6 mt-2" /><Skeleton className="h-4 w-full mt-2" /></CardContent>
+          </Card>
+          <Card className="shadow-lg">
+            <CardHeader><Skeleton className="h-8 w-3/4" /><Skeleton className="h-6 w-full mt-2" /></CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <div className="grid grid-cols-2 gap-4"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+              <Skeleton className="h-12 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    }>
+      <CheckoutPageContent />
+    </Suspense>
   );
 }

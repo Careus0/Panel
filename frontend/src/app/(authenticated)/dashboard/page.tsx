@@ -1,6 +1,6 @@
-
 "use client";
 
+import { Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,20 +13,20 @@ const generatePlaceholderLogs = (botId: string, count: number = 50) => {
   const startTime = new Date();
   for (let i = 0; i < count; i++) {
     const timestamp = new Date(startTime.getTime() - i * Math.random() * 60000); 
-    const logType = ["INFO", "PERINGATAN", "ERROR", "DEBUG"][Math.floor(Math.random() * 4)]; // Diubah
+    const logType = ["INFO", "PERINGATAN", "ERROR", "DEBUG"][Math.floor(Math.random() * 4)];
     let message = "";
     switch (logType) {
       case "INFO":
-        message = `Bot ${botId} memproses tugas #${Math.floor(Math.random() * 1000)}.`; // Diubah
+        message = `Bot ${botId} memproses tugas #${Math.floor(Math.random() * 1000)}.`;
         break;
-      case "PERINGATAN": // Diubah
-        message = `Potensi masalah terdeteksi: batas tarif API mendekati untuk ${botId}.`; // Diubah
+      case "PERINGATAN":
+        message = `Potensi masalah terdeteksi: batas tarif API mendekati untuk ${botId}.`;
         break;
       case "ERROR":
-        message = `Gagal menjalankan perintah 'contoh_perintah' untuk ${botId}. Kode error: ${Math.floor(Math.random() * 500) + 400}.`; // Diubah
+        message = `Gagal menjalankan perintah 'contoh_perintah' untuk ${botId}. Kode error: ${Math.floor(Math.random() * 500) + 400}.`;
         break;
       case "DEBUG":
-        message = `Variabel 'hitung_pengguna' untuk bot ${botId} adalah ${Math.floor(Math.random() * 100)}.`; // Diubah
+        message = `Variabel 'hitung_pengguna' untuk bot ${botId} adalah ${Math.floor(Math.random() * 100)}.`;
         break;
     }
     logs.push({
@@ -38,14 +38,13 @@ const generatePlaceholderLogs = (botId: string, count: number = 50) => {
   return logs.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 };
 
-
-export default function BotLogsPage() {
+function BotLogsPageContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const botId = params.botId as string;
-  const botName = searchParams.get("name") || "Bot Tidak Dikenal"; // Diubah
+  const botName = searchParams.get("name") || "Bot Tidak Dikenal";
 
   const [logs, setLogs] = useState<{timestamp: string; level: string; message: string}[]>([]);
 
@@ -59,7 +58,7 @@ export default function BotLogsPage() {
     switch (level) {
       case "ERROR":
         return "text-destructive";
-      case "PERINGATAN": // Diubah
+      case "PERINGATAN":
         return "text-yellow-500 dark:text-yellow-400";
       case "INFO":
         return "text-blue-500 dark:text-blue-400";
@@ -94,7 +93,7 @@ export default function BotLogsPage() {
                     <span className="text-muted-foreground min-w-[180px] pr-2">
                       {new Date(log.timestamp).toLocaleString('id-ID')} 
                     </span>
-                    <span className={`font-semibold min-w-[80px] ${getLogLevelClass(log.level)}`}> {/* Adjusted min-width for PERINGATAN */}
+                    <span className={`font-semibold min-w-[80px] ${getLogLevelClass(log.level)}`}>
                       [{log.level}]
                     </span>
                     <span className="ml-2 flex-1">{log.message}</span>
@@ -113,5 +112,20 @@ export default function BotLogsPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function BotLogsPage() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-6">
+        <div className="bg-muted/30 p-4 rounded-md animate-pulse">
+          <div className="h-10 bg-gray-200 mb-4 rounded"></div>
+          <div className="h-[600px] bg-gray-100 rounded"></div>
+        </div>
+      </div>
+    }>
+      <BotLogsPageContent />
+    </Suspense>
   );
 }
