@@ -1,34 +1,13 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    },
-    {
-      "src": "backend/api/index.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "backend/api/index.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/$1"
-    }
-  ],
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/.next",
+  "installCommand": "cd frontend && npm install",
+  "framework": "nextjs",
   "env": {
-    "DATABASE_URL": "sqlite:///tmp/sentinel.db",
-    "SECRET_KEY": "@secret_key",
-    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
-    "TELEGRAM_BOT_USERNAME": "Mr_Sakamotobot"
-  },
-  "functions": {
-    "backend/api/index.py": {
-      "maxDuration": 30
-    }
+    "NEXT_PUBLIC_API_URL": "https://sentinel-ubot.vercel.app/api",
+    "NEXT_PUBLIC_TELEGRAM_BOT_USERNAME": "Mr_Sakamotobot",
+    "NEXT_PUBLIC_APP_NAME": "Sentinel Ubot",
+    "NEXT_PUBLIC_APP_URL": "https://sentinel-ubot.vercel.app"
   }
 }
