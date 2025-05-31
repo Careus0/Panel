@@ -9,20 +9,22 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=sqlite:///./sentinel.db
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=your-secret-key-here
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES=30
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+      - TELEGRAM_BOT_USERNAME=Mr_Sakamotobot
       - HOST=0.0.0.0
       - PORT=8000
-      - BACKEND_CORS_ORIGINS=["https://careus-001-site1.mtempurl.com"]
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000"]
       - RATE_LIMIT_PER_SECOND=10
       - SESSION_EXPIRE_DAYS=7
     volumes:
       - ./backend:/app
       - sqlite_data:/app/data
     restart: unless-stopped
+    networks:
+      - sentinel-network
 
   frontend:
     build:
@@ -31,14 +33,20 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=https://careus-001-site1.mtempurl.com
-      - NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      - NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=Mr_Sakamotobot
       - NEXT_PUBLIC_APP_NAME=Sentinel Ubot
-      - NEXT_PUBLIC_APP_URL=https://careus-001-site1.mtempurl.com
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
       - PORT=3000
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - sentinel-network
 
 volumes:
   sqlite_data:
+
+networks:
+  sentinel-network:
+    driver: bridge
